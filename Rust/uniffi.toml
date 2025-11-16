@@ -1,0 +1,6 @@
+[package]
+mozilla_extension = false
+
+[bindings.swift]
+package_name = "swift-xet"
+experimental_sendable_value_types = true

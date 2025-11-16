@@ -1,0 +1,7 @@
+module swift_xet_rustFFI {
+    header "swift_xet_rustFFI.h"
+    export *
+    use "Darwin"
+    use "_Builtin_stdbool"
+    use "_Builtin_stdint"
+}

@@ -1,0 +1,156 @@
+namespace swift_xet_rust {
+
+};
+
+/// An error that occurs during Xet operations.
+///
+/// This error type represents various failure conditions that can occur when
+/// interacting with Xet repositories, including network issues, authentication
+/// problems, and data processing errors.
+[Error]
+interface XetError {
+    /// A general operation failure occurred.
+    OperationFailed(string message);
+    
+    /// Invalid input was provided to a method.
+    InvalidInput(string message);
+    
+    /// An I/O error occurred during file operations.
+    IoError(string message);
+    
+    /// A network error occurred during a request.
+    NetworkError(string message);
+    
+    /// An authentication error occurred.
+    AuthError(string message);
+    
+    /// A cache operation failed.
+    CacheError(string message);
+    
+    /// A token-related error occurred.
+    TokenError(string message);
+};
+
+/// Information about a file stored in a Xet repository.
+///
+/// This type contains the hash and size of a file, which are used to
+/// identify and download files from Xet's content-addressable storage system.
+interface XetFileInfo {
+    /// Creates a new file info instance.
+    constructor(string hash, u64 file_size);
+    
+    /// Returns the content hash of the file.
+    string hash();
+    
+    /// Returns the size of the file in bytes.
+    u64 file_size();
+};
+
+/// Metadata about a file or directory entry in a repository.
+///
+/// This type provides information about entries in a repository's file tree,
+/// including their paths, types, sizes, and content identifiers.
+interface FileMetadata {
+    /// Returns the path of the file or directory within the repository.
+    string path();
+    
+    /// Returns the type of the entry.
+    string entry_type();
+    
+    /// Returns the size of the file in bytes, if available.
+    u64? size();
+    
+    /// Returns the content hash of the file, if available.
+    string? hash();
+    
+    /// Returns the Git object ID of the entry, if available.
+    string? oid();
+};
+
+/// JWT token information for accessing the Content-Addressable Storage (CAS) system.
+///
+/// This type contains the authentication token and endpoint URL needed to
+/// interact with Xet's CAS system for downloading or uploading files.
+interface CasJwtInfo {
+    /// Returns the URL of the CAS server endpoint.
+    string cas_url();
+    
+    /// Returns the JWT access token for authenticating CAS requests.
+    string access_token();
+    
+    /// Returns the expiration time of the token as a Unix timestamp.
+    u64 exp();
+};
+
+/// Information about a Hugging Face repository.
+///
+/// This type contains the repository type and full name, which uniquely
+/// identify a repository on Hugging Face Hub.
+interface RepoInfo {
+    /// Returns the type of the repository.
+    string repo_type();
+    
+    /// Returns the full name of the repository.
+    string full_name();
+};
+
+/// Statistics about the local Xet cache.
+///
+/// This type provides information about the cache's size and the number
+/// of cached files.
+interface CacheStats {
+    /// Returns the total size of the cache in bytes.
+    u64 total_size_bytes();
+    
+    /// Returns the number of files in the cache.
+    u64 file_count();
+};
+
+// callback interface ProgressCallback {
+//     void on_progress(ProgressUpdate update);
+// };
+
+/// A client for interacting with Xet repositories.
+///
+/// The `XetClient` provides methods to download files, list repository contents,
+/// and manage the local cache for Xet-enabled repositories on Hugging Face Hub.
+///
+/// You can create a client with or without authentication. For public repositories,
+/// authentication is optional. For private repositories or upload operations,
+/// you need to provide a Hugging Face authentication token.
+interface XetClient {
+    /// Creates a new Xet client without authentication.
+    [Throws=XetError]
+    constructor();
+    
+    /// Creates a new Xet client with an authentication token.
+    [Name=with_token, Throws=XetError]
+    constructor(string token);
+    
+    /// Returns the version of the Xet client library.
+    string version();
+    
+    /// Downloads files using the Xet Content-Addressable Storage (CAS) system.
+    [Throws=XetError]
+    sequence<string> download_files(sequence<XetFileInfo> file_infos, string destination_dir, CasJwtInfo jwt_info);
+    
+    /// Retrieves a JWT token for accessing the Content-Addressable Storage (CAS) system.
+    [Throws=XetError]
+    CasJwtInfo get_cas_jwt(string repo, string? revision, boolean is_upload);
+    
+    /// Retrieves file information from a pointer file in the repository.
+    [Throws=XetError]
+    XetFileInfo? get_file_info(string repo, string path, string? revision);
+    
+    /// Parses a repository identifier and returns structured repository information.
+    [Throws=XetError]
+    RepoInfo get_repo_info(string repo);
+    
+    /// Clears all files from the local Xet cache.
+    [Throws=XetError]
+    void clear_cache();
+    
+    /// Returns statistics about the local Xet cache.
+    [Throws=XetError]
+    CacheStats get_cache_stats();
+};
