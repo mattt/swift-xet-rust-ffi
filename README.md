@@ -1,23 +1,18 @@
-# swift-xet
+# swift-xet (using Rust FFI)
+
+> [!IMPORTANT]  
+> This project has been archived in favor of
+> [swift-xet](https://github.com/mattt/swift-xet),
+> a Swift implementation of Xet.
 
 [Xet](https://huggingface.co/docs/hub/en/xet/index)
 is a storage system for large binary files that uses chunk-level deduplication.
 Hugging Face uses Xet so users can download only the files they need 
 without cloning the entire repository history.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/xet-speed-dark.gif">
-  <source media="(prefers-color-scheme: light)" srcset="Assets/xet-speed.gif">
-  <img alt="XET vs LFS">
-</picture>
-
 This project provides Swift bindings to
 the [xet-core](https://github.com/huggingface/xet-core) Rust crate
 using [UniFFI](https://mozilla.github.io/uniffi-rs/).
-
-> [!WARNING]  
-> This project is under active development, and not ready for production use.
-
 
 ## Requirements
 
@@ -32,13 +27,13 @@ Add the following dependency to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/mattt/swift-xet.git", branch: "main")
+    .package(url: "https://github.com/mattt/swift-xet-rust-ffi.git", branch: "main")
 ],
 targets: [
     .target(
         name: "YourTarget",
         dependencies: [
-            .product(name: "Xet", package: "swift-xet")
+            .product(name: "Xet", package: "swift-xet-rust-ffi")
         ]
     )
 ]
@@ -47,7 +42,7 @@ targets: [
 ### Xcode
 
 1. In Xcode, select **File** → **Add Package Dependencies...**
-2. Enter the repository URL: `https://github.com/mattt/swift-xet.git`
+2. Enter the repository URL: `https://github.com/mattt/swift-xet-rust-ffi.git`
 3. Select the version you want to use
 4. Add the `Xet` library to your target
 
